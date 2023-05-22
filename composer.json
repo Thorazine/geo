@@ -11,5 +11,10 @@
             "Thorazine\\Geo\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Nh1816\\Geo\\Tests\\": "tests/"
+        }
+    },
     "minimum-stability": "stable"
 }
