@@ -2,12 +2,9 @@
 
 namespace Nh1816\Loga;
 
-// use Illuminate\Support\Facades\App;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Routing\Router;
-use Illuminate\Support\Facades\Route;
-use Loga;
 
 class GeoServiceProvider extends ServiceProvider
 {
