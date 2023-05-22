@@ -3,7 +3,7 @@
     "description": "All countries, cities, provinces and geolocation classes",
     "type": "library",
     "require": {
-        "guzzlehttp/guzzle": "^7.7",
+        "guzzlehttp/guzzle": "^7.0",
         "matanyadaev/laravel-eloquent-spatial": "^3.1"
     },
     "license": "proprietary",
