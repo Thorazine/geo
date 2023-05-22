@@ -1,6 +1,6 @@
 <?php
 
-namespace Nh1816\Loga;
+namespace Thorazine\Geo;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Contracts\Http\Kernel;
