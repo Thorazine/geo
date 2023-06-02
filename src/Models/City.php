@@ -32,6 +32,11 @@ class City extends Model
         'external_ref_key'
     ];
 
+    public function country()
+    {
+        return $this->belongsTo(Country::class);
+    }
+
     public function province()
     {
         return $this->belongsTo(Province::class);
