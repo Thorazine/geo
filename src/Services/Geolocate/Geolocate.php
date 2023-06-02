@@ -17,9 +17,10 @@ class Geolocate extends GeoConnector
      *                  Public functions
      *************************************************************************/
 
-    public function get()
+    public function ip($ip = null)
     {
-        $result = $this->call($this->apiUrl, []);
+        $options = ($ip) ? ['ip' => $ip] : [];
+        $result = $this->call($this->apiUrl, $options);
         return $result;
     }
 
