@@ -37,7 +37,7 @@ class Country extends Model
 
     public function getNameAttribute()
     {
-        return __('countries.'.$this->title);
+        return __('geo::countries.'.$this->title);
     }
 
     public function getHashAttribute()
