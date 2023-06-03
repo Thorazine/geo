@@ -22,6 +22,7 @@ return new class extends Migration
             $table->boolean('has_geo')->default(false);
             $table->boolean('is_checked')->default(false);
             $table->boolean('is_user_altered')->default(false);
+            $table->integer('priority')->default(0);
 
             $table->timestamps();
         });
