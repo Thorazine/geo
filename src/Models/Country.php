@@ -45,7 +45,7 @@ class Country extends Model
         return Hashids::connection(strtolower((new \ReflectionClass($this))->getShortName()))->encode($this->id);
     }
 
-    public static function slug(string $slug)
+    public static function bySlug(string $slug)
     {
         return self::where('slug', $slug)->firstOrFail();
     }
