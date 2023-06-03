@@ -2,6 +2,7 @@
 
 namespace Thorazine\Geo\Models;
 
+use Illuminate\Support\Str;
 use Vinkla\Hashids\Facades\Hashids;
 use Illuminate\Database\Eloquent\Model;
 use MatanYadaev\EloquentSpatial\Objects\Point;
@@ -29,6 +30,15 @@ class Country extends Model
     protected $appends = [
         'name',
     ];
+
+    public static function boot()
+    {
+        parent::boot();
+
+        static::saving(function($model) {
+            $model->slug = Str::slug($model->title);
+        });
+    }
 
     public function provinces()
     {

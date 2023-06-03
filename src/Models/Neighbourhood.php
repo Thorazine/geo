@@ -2,6 +2,7 @@
 
 namespace Thorazine\Geo\Models;
 
+use Illuminate\Support\Str;
 use Vinkla\Hashids\Facades\Hashids;
 use Illuminate\Database\Eloquent\Model;
 use Thorazine\Geo\Services\Maps\Geolocate;
@@ -30,6 +31,16 @@ class Neighbourhood extends Model
         'slug',
         'city_id',
     ];
+
+    public static function boot()
+    {
+        parent::boot();
+
+        static::saving(function($model) {
+            $model->slug = Str::slug($model->title);
+            $model->search_title = Str::ascii($model->title);
+        });
+    }
 
     public function city()
     {

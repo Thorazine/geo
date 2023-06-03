@@ -2,6 +2,7 @@
 
 namespace Thorazine\Geo\Models;
 
+use Illuminate\Support\Str;
 use Thorazine\Geo\Models\City;
 use Thorazine\Geo\Models\Country;
 use Vinkla\Hashids\Facades\Hashids;
@@ -34,6 +35,16 @@ class Province extends Model
         'slug',
         'external_ref_key'
     ];
+
+    public static function boot()
+    {
+        parent::boot();
+
+        static::saving(function($model) {
+            $model->slug = Str::slug($model->title);
+            $model->search_title = Str::ascii($model->title);
+        });
+    }
 
     public function country()
     {

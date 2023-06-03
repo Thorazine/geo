@@ -2,6 +2,7 @@
 
 namespace Thorazine\Geo\Models;
 
+use Illuminate\Support\Str;
 use Vinkla\Hashids\Facades\Hashids;
 use Illuminate\Database\Eloquent\Model;
 use Thorazine\Geo\Services\Maps\Geolocate;
@@ -31,6 +32,16 @@ class City extends Model
         'province_id',
         'external_ref_key'
     ];
+
+    public static function boot()
+    {
+        parent::boot();
+
+        static::saving(function($model) {
+            $model->slug = Str::slug($model->title);
+            $model->search_title = Str::ascii($model->title);
+        });
+    }
 
     public function country()
     {
