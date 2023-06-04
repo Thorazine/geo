@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('title');
             $table->string('search_title')->index();
             $table->string('slug');
+            $table->string('logo')->nullable();
             $table->text('description')->nullable();
             $table->point('location')->nullable();
             $table->integer('population')->nullable();
