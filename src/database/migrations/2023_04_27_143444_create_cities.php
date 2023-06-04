@@ -26,7 +26,7 @@ return new class extends Migration
             $table->boolean('is_checked')->default(false);
             $table->boolean('is_user_altered')->default(false);
 
-            $table->timestamps();
+            $table->timestampsTz();
         });
     }
 
