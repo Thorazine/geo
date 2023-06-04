@@ -25,6 +25,23 @@ class ImportCities extends Command
      */
     protected $description = 'Import all cities from a csv file';
 
+    protected $priorities = [
+        'NL' => 990,
+        'BE' => 980,
+        'DE' => 970,
+        'FR' => 960,
+        'GB' => 950,
+        'ES' => 940,
+        'IT' => 930,
+        'PT' => 920,
+        'AT' => 910,
+        'CH' => 900,
+        'DK' => 890,
+        'SE' => 880,
+        'NO' => 870,
+        'FI' => 860,
+    ];
+
     /**
      * Execute the console command.
      */
@@ -90,6 +107,7 @@ class ImportCities extends Command
         if(@$country->id) {
             return $country->id;
         }
+        $country->priority = @$this->priorities[$country->title] ?: 0;
         $country->slug = Str::slug($line['country_code']);
         $country->is_checked = true;
         $country->save();
