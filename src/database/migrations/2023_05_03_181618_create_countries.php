@@ -23,7 +23,7 @@ return new class extends Migration
             $table->boolean('is_user_altered')->default(false);
             $table->integer('priority')->default(0);
 
-            $table->timestampsTz();
+            $table->timestamps();
         });
     }
 
