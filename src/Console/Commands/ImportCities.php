@@ -42,6 +42,10 @@ class ImportCities extends Command
         'FI' => 860,
     ];
 
+    protected $countries = [];
+    protected $cities = [];
+    protected $provinces = [];
+
     /**
      * Execute the console command.
      */
@@ -72,19 +76,15 @@ class ImportCities extends Command
             // id,name,state_id,state_code,state_name,country_id,country_code,country_name,latitude,longitude,wikiDataId
             // 77340,Amsterdam,2612,NH,"North Holland",156,NL,Netherlands,52.37403000,4.88969000,Q727
 
-            $city = City::where('title', $line['name'])
-                ->where('country_id', $countryId)
-                ->where('province_id', $provinceId)
-                ->first();
+            if(array_key_exists($line['name'].'|'.$countryId.'|'.$provinceId, $this->cities)) {
+                continue;
+            }
 
             if(@$city->is_user_altered) {
                 continue;
             }
 
-            if(! $city) {
-                $city = new City;
-            }
-            
+            $city = new City;
             $city->slug = Str::slug($line['name']);
             $city->title = $line['name'];
             $city->search_title = Str::ascii($line['name']);
@@ -94,6 +94,8 @@ class ImportCities extends Command
             $city->has_geo = true;
             $city->is_checked = true;
             $city->save();
+
+            // $this->cities[$line['name'].'|'.$countryId.'|'.$provinceId] = $city->id;
         }
         fclose($file);
         $bar->finish();
@@ -101,16 +103,19 @@ class ImportCities extends Command
 
     private function countryId($line)
     {
-        $country = Country::firstOrNew([
-            'title' => strtoupper($line['country_code']),
-        ]);
-        if(@$country->id) {
-            return $country->id;
+        if(array_key_exists($line['country_code'], $this->countries)) {
+            return $this->countries[$line['country_code']];
         }
+        
+        $country = new Country;
+        $country->title = strtoupper($line['country_code']);
         $country->priority = @$this->priorities[$country->title] ?: 0;
         $country->slug = Str::slug($line['country_code']);
         $country->is_checked = true;
         $country->save();
+
+        $this->countries[$line['country_code']] = $country->id;
+
         return $country->id;
 
     }
@@ -121,16 +126,11 @@ class ImportCities extends Command
             return null;
         }
 
-        $province = Province::where('title', $line['state_name'])
-            ->where('country_id', $countryId)
-            ->first();
+        if(array_key_exists($line['state_name'].'|'.$countryId, $this->provinces)) {
+            return $this->provinces[$line['state_name'].'|'.$countryId];
+        }
 
-        if(@$province->id) {
-            return $province->id;
-        }
-        else {
-            $province = new Province;
-        }
+        $province = new Province;
         $province->title = $line['state_name'];
         $province->slug = Str::slug($line['state_name']);
         $province->search_title = Str::ascii($line['state_name']);
@@ -138,6 +138,9 @@ class ImportCities extends Command
         $province->country_id = $countryId;
         $province->is_checked = true;
         $province->save();
+
+        $this->provinces[$line['state_name'].'|'.$countryId] = $province->id;
+        
         return $province->id;
 
     }
