@@ -72,7 +72,7 @@ class ImportCities extends Command
             // id,name,state_id,state_code,state_name,country_id,country_code,country_name,latitude,longitude,wikiDataId
             // 77340,Amsterdam,2612,NH,"North Holland",156,NL,Netherlands,52.37403000,4.88969000,Q727
 
-            $city = City::where('search_title', Str::ascii($line['name']))
+            $city = City::where('title', $line['name'])
                 ->where('country_id', $countryId)
                 ->where('province_id', $provinceId)
                 ->first();
@@ -121,7 +121,7 @@ class ImportCities extends Command
             return null;
         }
 
-        $province = Province::where('search_title', Str::ascii($line['state_name']))
+        $province = Province::where('title', $line['state_name'])
             ->where('country_id', $countryId)
             ->first();
 
