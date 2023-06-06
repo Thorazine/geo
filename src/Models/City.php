@@ -53,6 +53,11 @@ class City extends Model
         return $this->belongsTo(Province::class);
     }
 
+    public function neighborhoods()
+    {
+        return $this->hasMany(Neighborhood::class);
+    }
+
     public function geocode()
     {
         try {
