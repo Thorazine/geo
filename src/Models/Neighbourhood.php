@@ -19,7 +19,7 @@ class Neighbourhood extends Model
     ];
 
     protected $appends = [
-        'hash',
+        // 'hash',
     ];
 
     protected $hidden = [

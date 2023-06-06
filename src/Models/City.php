@@ -19,7 +19,7 @@ class City extends Model
     ];
 
     protected $appends = [
-        'hash',
+        // 'hash',
     ];
 
     protected $hidden = [
