@@ -85,7 +85,7 @@ class Geo
             $province->title = $findProvince;
             $province->search_title = Str::ascii($findProvince);
             if($shortProvince) {
-                $province->short_title = $shortProvince;
+                $province->title_short = $shortProvince;
             }
             $province->slug = $this->slug($findProvince, '-');
             $province->save();
