@@ -25,10 +25,6 @@ class Province extends Model
         'location' => Point::class,
     ];
 
-    protected $spatialFields = [
-        'location',
-    ];
-
     protected $fillable = [
         'title',
         'country_id',
