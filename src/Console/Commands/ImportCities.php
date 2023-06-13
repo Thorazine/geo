@@ -84,6 +84,15 @@ class ImportCities extends Command
                 continue;
             }
 
+
+            if($city = City::where('title', $line['name'])
+                ->where('country_id', $countryId)
+                ->where('province_id', $provinceId)
+                ->first()) {
+                $this->cities[$line['name'].'|'.$countryId.'|'.$provinceId] = $city->id;
+                continue;
+            }
+
             $city = new City;
             $city->slug = Str::slug($line['name']);
             $city->title = $line['name'];
@@ -95,7 +104,7 @@ class ImportCities extends Command
             $city->is_checked = true;
             $city->save();
 
-            // $this->cities[$line['name'].'|'.$countryId.'|'.$provinceId] = $city->id;
+            $this->cities[$line['name'].'|'.$countryId.'|'.$provinceId] = $city->id;
         }
         fclose($file);
         $bar->finish();
@@ -105,6 +114,11 @@ class ImportCities extends Command
     {
         if(array_key_exists($line['country_code'], $this->countries)) {
             return $this->countries[$line['country_code']];
+        }
+
+        if($country = Country::where('title', strtoupper($line['country_code']))->first()) {
+            $this->countries[$line['country_code']] = $country->id;
+            return $country->id;
         }
         
         $country = new Country;
@@ -128,6 +142,13 @@ class ImportCities extends Command
 
         if(array_key_exists($line['state_name'].'|'.$countryId, $this->provinces)) {
             return $this->provinces[$line['state_name'].'|'.$countryId];
+        }
+
+        if($province = Province::where('title', $line['state_name'])
+            ->where('country_id', $countryId)
+            ->first()) {
+            $this->provinces[$line['state_name'].'|'.$countryId] = $province->id;
+            return $province->id;
         }
 
         $province = new Province;
