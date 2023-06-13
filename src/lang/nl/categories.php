@@ -34,5 +34,14 @@ return [
     'entertiament-center' => 'Entertainment centrum',
     'winkelcentrum' => 'Winkelcentrum',
     'concert-hall' => 'Concertzaal',
-    
+    'house' => 'Huis',
+    'apartment' => 'Appartement',
+    'office' => 'Kantoor',
+    'government-building' => 'Overheidsgebouw',
+    'industrial-building' => 'Industrieel gebouw',
+    'public-building' => 'Openbaar gebouw',
+    'school' => 'School',
+    'university' => 'Universiteit',
+    'college' => 'College',
+    'hospital' => 'Ziekenhuis',    
 ];
