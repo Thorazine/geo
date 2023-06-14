@@ -31,6 +31,7 @@ class GeoServiceProvider extends ServiceProvider
             $this->commands([
                 Console\Commands\GeoAll::class,
                 Console\Commands\ImportCities::class,
+                Console\Commands\SyncTags::class,
             ]);
         }
     }
