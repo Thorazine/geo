@@ -47,4 +47,9 @@ return [
     'winkelcentrum' => 'Winkelcentrum',
     'hospital' => 'Ziekenhuis',  
     'swimmingpool' => 'Zwembad',  
+    'midgetgolf' => 'Midgetgolf',
+    'bowling' => 'Bowlingbaan',
+    'golf-course' => 'Golfbaan',
+    'karting' => 'Kartbaan',
+
 ];
