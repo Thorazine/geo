@@ -32,6 +32,7 @@ class GeoServiceProvider extends ServiceProvider
                 Console\Commands\GeoAll::class,
                 Console\Commands\ImportCities::class,
                 Console\Commands\SyncTags::class,
+                Console\Commands\LanguagePrint::class,
             ]);
         }
     }
