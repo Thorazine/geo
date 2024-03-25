@@ -16,7 +16,7 @@ class MapsConnector
 
     public function __construct($responseClass)
     {
-        if(!config('googlemaps.google_maps_api_key')) {
+        if(!config('geo.google_maps_api_key')) {
             throw new \Exception('Google maps key not set (GOOGLE_MAPS_API_KEY in env)');
         }
 
@@ -29,11 +29,11 @@ class MapsConnector
     }
 
     final protected function call($url, $params = [])
-    {        
+    {
         $this->hasResult = false;
 
         $params = array_merge($params, [
-            'key' => config('googlemaps.google_maps_api_key'),
+            'key' => config('geo.google_maps_api_key'),
         ]);
 
         $response = $this->client->request('GET', $url, [
@@ -53,5 +53,5 @@ class MapsConnector
         $this->hasResult = true;
         return $this->responseClass->setResponse($response)->parse();
     }
-    
+
 }
