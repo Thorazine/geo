@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('search_title')->index();
             $table->string('slug');
             $table->bigInteger('logo')->nullable();
-            $table->point('location')->nullable();
+            $table->geometry('location', subtype: 'point')->nullable();
             $table->boolean('has_geo')->default(false);
             $table->boolean('is_checked')->default(false);
             $table->boolean('is_user_altered')->default(false);

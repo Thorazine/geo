@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('slug');
             $table->bigInteger('logo')->nullable();
             $table->text('description')->nullable();
-            $table->point('location')->nullable();
+            $table->geometry('location', subtype: 'point')->nullable();
             $table->integer('population')->nullable();
             $table->boolean('has_geo')->default(false);
             $table->integer('priority')->default(0);

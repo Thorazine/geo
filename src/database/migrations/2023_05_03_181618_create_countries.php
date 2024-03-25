@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('title')->index();
             $table->string('slug')->index();
             $table->bigInteger('logo')->nullable();
-            $table->point('location')->nullable();
+            $table->geometry('location', subtype: 'point')->nullable();
             $table->string('geo_province')->default('administrative_area_level_2,administrative_area_level_1');
             $table->boolean('has_geo')->default(false);
             $table->boolean('is_checked')->default(false);
