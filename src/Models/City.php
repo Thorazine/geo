@@ -143,6 +143,44 @@ class City extends Model
         return $cityModel;
     }
 
+    public static function findByCoordinates($latitude, $longitude)
+    {
+        $point = new Point($latitude, $longitude);
+
+        $city = self::whereDistanceSphere('location', $point, '<', 1000)
+            ->orderByDistanceSphere('location', $point)
+            ->with('province', 'country')
+            ->first();
+
+        if ($city) {
+            return $city;
+        }
+
+        $geoCity = (new Geolocate)->coordinates($latitude, $longitude)->get();
+
+        if(!$geoCity) {
+            return null;
+        }
+
+        $country = Country::iso($geoCity->countryIso);
+        $province = Province::getOrGeo($country, $geoCity->province);
+
+        $cityModel = new City;
+        $cityModel->country_id = $country->id;
+        if($province) {
+            $cityModel->province_id = $province->id;
+        }
+        $cityModel->title = $geoCity->city;
+        $cityModel->location = new Point($geoCity->lat, $geoCity->lng);
+        $cityModel->has_geo = true;
+        $cityModel->save();
+
+        $cityModel->setRelation('country', $country);
+        $cityModel->setRelation('province', $province);
+
+        return $cityModel;
+    }
+
     public function scopeLevenshtein($query, string $city, int $limit = 1)
     {
         $city = Str::ascii($city);
