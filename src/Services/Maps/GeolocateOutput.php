@@ -29,7 +29,7 @@ class GeolocateOutput extends MapsOutput
             $this->lat = $this->lat ?: $geometry->location->lat;
             $this->lng = $this->lng ?: $geometry->location->lng;
         }
-        
+
         return $this;
     }
 
@@ -41,7 +41,7 @@ class GeolocateOutput extends MapsOutput
     public function parse()
     {
         $this->find('country', 'country', 'short_name', function($valueShort, $valueLong) {
-            $this->country = __('countries.'.$valueShort);
+            $this->country = __('geo::countries.'.$valueShort);
             $this->countryIso = $valueShort;
         });
 
