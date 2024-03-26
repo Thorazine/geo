@@ -53,5 +53,4 @@ class MapsConnector
         $this->hasResult = true;
         return $this->responseClass->setResponse($response)->parse();
     }
-
 }

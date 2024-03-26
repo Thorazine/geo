@@ -5,6 +5,7 @@ namespace Thorazine\Geo\Models;
 use Illuminate\Support\Str;
 use Thorazine\Geo\Models\City;
 use Thorazine\Geo\Models\Country;
+use Illuminate\Support\Facades\DB;
 use Vinkla\Hashids\Facades\Hashids;
 use Illuminate\Database\Eloquent\Model;
 use Thorazine\Geo\Services\Maps\Geolocate;
@@ -88,5 +89,46 @@ class Province extends Model
     public static function bySlug(string $slug)
     {
         return self::where('slug', $slug)->firstOrFail();
+    }public static function getOrGeo(Country $country, string|null $province)
+    {
+        if(! $province) return null;
+
+        if($provinceModel = self::where('country_id', $country->id)
+            ->levenshtein(Str::ascii($province), 1)
+            ->levenshteinOrder(Str::ascii($province))
+            ->first()) {
+            return $provinceModel;
+        }
+
+        $geoProvince = (new Geolocate)->country($country->title)->province($province)->get();
+
+        if(! $geoProvince->has()) {
+            return null;
+        }
+
+        $provinceModel = new Province;
+        $provinceModel->country_id = $country->id;
+        $provinceModel->title = $geoProvince->province;
+        $provinceModel->title_short = $geoProvince->provinceIso;
+        $provinceModel->location = new Point($geoProvince->lat, $geoProvince->lng);
+        $provinceModel->has_geo = true;
+        $provinceModel->save();
+
+        $provinceModel->setRelation('country', $country);
+
+        return $provinceModel;
+    }
+
+    public function scopeLevenshtein($query, $province, $limit = 1)
+    {
+        $province = Str::ascii($province);
+        return $query->whereRaw('LEVENSHTEIN(search_title, ?) < '.$limit, [$province]);
+    }
+
+    public function scopeLevenshteinOrder($query, $province)
+    {
+        $province = Str::ascii($province);
+        return $query->select(DB::raw('provinces.*, LEVENSHTEIN(search_title, "'.$province.'") as distance'))
+            ->orderBy('distance', 'asc');
     }
 }

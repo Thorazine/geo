@@ -15,7 +15,7 @@ class GeoServiceProvider extends ServiceProvider
      */
     public function boot(Kernel $kernel, Router $router)
     {
-        // publish 
+        // publish
         $this->publishes([
             __DIR__.'/config/geo.php' => config_path('geo.php'),
         ], 'geo');
@@ -26,11 +26,12 @@ class GeoServiceProvider extends ServiceProvider
         $this->loadTranslationsFrom(__DIR__ . '/lang', 'geo');
 
         // Register console commands
-        if($this->app->runningInConsole()) 
+        if($this->app->runningInConsole())
         {
             $this->commands([
                 Console\Commands\GeoAll::class,
                 Console\Commands\ImportCities::class,
+                Console\Commands\ImportCountries::class,
                 Console\Commands\SyncTags::class,
                 Console\Commands\LanguagePrint::class,
             ]);

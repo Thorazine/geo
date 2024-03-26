@@ -59,4 +59,10 @@ class Country extends Model
     {
         return self::where('slug', $slug)->firstOrFail();
     }
+
+    public function scopeIso($query, string $title)
+    {
+        return $query->where('title', strtoupper($title))
+            ->firstOrFail();
+    }
 }
