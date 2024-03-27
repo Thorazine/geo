@@ -89,7 +89,9 @@ class Province extends Model
     public static function bySlug(string $slug)
     {
         return self::where('slug', $slug)->firstOrFail();
-    }public static function getOrGeo(Country $country, string|null $province)
+    }
+
+    public static function getOrGeo(Country $country, string|null $province)
     {
         if(! $province) return null;
 
@@ -113,8 +115,6 @@ class Province extends Model
         $provinceModel->location = new Point($geoProvince->lat, $geoProvince->lng);
         $provinceModel->has_geo = true;
         $provinceModel->save();
-
-        $provinceModel->setRelation('country', $country);
 
         return $provinceModel;
     }
