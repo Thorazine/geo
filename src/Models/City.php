@@ -10,6 +10,7 @@ use Thorazine\Geo\Services\Maps\Geolocate;
 use MatanYadaev\EloquentSpatial\Objects\Point;
 use MatanYadaev\EloquentSpatial\Traits\HasSpatial;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\FlareClient\Api;
 
 class City extends Model
 {
@@ -92,16 +93,18 @@ class City extends Model
 
     public static function getOrGeo(Country $country, Province|null $province, string $city)
     {
+        // look in the DB
         if($cityModel = self::where('country_id', $country->id)
             ->when($province, function($query) use ($province) {
                 return $query->where('province_id', $province->id);
             })
             ->levenshtein(Str::ascii($city), 1)
             ->levenshteinOrder(Str::ascii($city))
+            ->with('province')
             ->first()) {
             $cityModel->setRelation('country', $country);
 
-            if(! $province) {
+            if(! $province && ! $cityModel->province) {
                 $geoCity = (new Geolocate)->country($country->title)->address($city)->get();
 
                 if($geoCity->province) {
@@ -109,31 +112,26 @@ class City extends Model
                 }
             }
 
-            $cityModel->setRelation('province', $province);
             return $cityModel;
         }
 
+        // geo locate
         $geoCity = (new Geolocate)->country($country->title);
-        if($province) {
-            $geoCity = $geoCity->province($province->title);
-        }
+        if($province) $geoCity = $geoCity->province($province->title);
         $geoCity = $geoCity->address($city)->get();
+        if(! $geoCity->has()) return null;
 
-        if(! $geoCity->has()) {
-            return null;
-        }
-
+        // check if the province is in the DB or create it
         if(@$province->title || $geoCity->province) {
             $province = Province::getOrGeo($country, $province->title ?? $geoCity->province);
         }
 
+        // add it to the DB
         $cityModel = new City;
         $cityModel->country_id = $country->id;
-        if($province) {
-            $cityModel->province_id = $province->id;
-        }
+        $cityModel->province_id = $province->id;
         $cityModel->title = $geoCity->city;
-        $cityModel->location = new Point($geoCity->lat, $geoCity->lng);
+        $cityModel->location = new Point(coordinateRound($geoCity->lat), coordinateRound($geoCity->lng));
         $cityModel->has_geo = true;
         $cityModel->save();
 
@@ -145,25 +143,42 @@ class City extends Model
 
     public static function findByCoordinates($latitude, $longitude)
     {
+        $latitude = coordinateRound($latitude);
+        $longitude = coordinateRound($longitude);
+
         $point = new Point($latitude, $longitude);
 
-        $city = self::whereDistanceSphere('location', $point, '<', 1000)
-            ->orderByDistanceSphere('location', $point)
-            ->with('province', 'country')
-            ->first();
-
-        if ($city) {
+        if($city = Coordinate::geo($latitude, $longitude)) {
+            ApiCall::geoDb();
             return $city;
         }
 
+        // find it with 100 m radius
+        if($city = self::whereDistanceSphere('location', $point, '<', 100)
+            ->orderByDistanceSphere('location', $point)
+            ->with('province', 'country')
+            ->first()) {
+                Coordinate::new($city->id, $latitude, $longitude);
+                return $city;
+            }
+
         $geoCity = (new Geolocate)->coordinates($latitude, $longitude)->get();
 
-        if(!$geoCity) {
-            return null;
-        }
+        if(!$geoCity) return null;
 
         $country = Country::iso($geoCity->countryIso);
         $province = Province::getOrGeo($country, $geoCity->province);
+
+        // find it in DB again
+        if($cityModel = self::where('country_id', $country->id)
+            ->where('province_id', $province->id)
+            ->where('title', $geoCity->city)
+            ->first()) {
+            Coordinate::new($cityModel->id, $latitude, $longitude);
+            $cityModel->setRelation('country', $country);
+            $cityModel->setRelation('province', $province);
+            return $cityModel;
+        }
 
         $cityModel = new City;
         $cityModel->country_id = $country->id;
@@ -171,9 +186,11 @@ class City extends Model
             $cityModel->province_id = $province->id;
         }
         $cityModel->title = $geoCity->city;
-        $cityModel->location = new Point($geoCity->lat, $geoCity->lng);
+        $cityModel->location = new Point(coordinateRound($geoCity->lat), coordinateRound($geoCity->lng));
         $cityModel->has_geo = true;
         $cityModel->save();
+
+        Coordinate::new($cityModel->id, $latitude, $longitude);
 
         $cityModel->setRelation('country', $country);
         $cityModel->setRelation('province', $province);

@@ -2,6 +2,7 @@
 
 namespace Thorazine\Geo\Services\Maps;
 
+use Thorazine\Geo\Enums\Country;
 use Illuminate\Filesystem\Filesystem;
 
 class GeolocateOutput extends MapsOutput
@@ -17,12 +18,14 @@ class GeolocateOutput extends MapsOutput
     public float|null $lat = null;
     public float|null $lng = null;
     public string|null $language = null;
+    public string|null $placeId = null;
 
     public function setResponse($fullResponse) : self
     {
         if($result = @$fullResponse->results[0]->address_components) {
             $this->hasResult = true;
             $this->result = $result;
+            $this->placeId = @$fullResponse->results[0]->place_id;
         }
 
         if($geometry = @$fullResponse->results[0]->geometry) {
@@ -41,7 +44,7 @@ class GeolocateOutput extends MapsOutput
     public function parse()
     {
         $this->find('country', 'country', 'short_name', function($valueShort, $valueLong) {
-            $this->country = __('geo::countries.'.$valueShort);
+            $this->country = Country::find($valueShort);
             $this->countryIso = $valueShort;
         });
 
@@ -90,9 +93,9 @@ class GeolocateOutput extends MapsOutput
 
     private function find(string $parameter, array|string $arguments, $key = 'long_name', $callback = null)
     {
-        if($this->$parameter) {
-            return $this->$parameter;
-        }
+        // if($this->$parameter) {
+        //     return $this->$parameter;
+        // }
 
         if(is_string($arguments)) {
             $arguments = [$arguments];

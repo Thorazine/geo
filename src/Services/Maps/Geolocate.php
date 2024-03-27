@@ -2,9 +2,10 @@
 
 namespace Thorazine\Geo\Services\Maps;
 
+use Thorazine\Geo\Models\ApiCall;
 use Thorazine\Geo\Services\Locate\Connector;
-use Thorazine\Geo\Services\Maps\GeolocateOutput;
 use MatanYadaev\EloquentSpatial\Objects\Point;
+use Thorazine\Geo\Services\Maps\GeolocateOutput;
 
 class Geolocate extends MapsConnector
 {
@@ -34,6 +35,7 @@ class Geolocate extends MapsConnector
 
     public function get()
     {
+        ApiCall::geo();
         $result = $this->call($this->apiUrl, $this->buildParams());
         return $result;
     }
@@ -184,5 +186,5 @@ class Geolocate extends MapsConnector
         ];
     }
 
-    
+
 }
